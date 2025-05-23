@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Desafio Asiático – Quiz Interativo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap');
+
+  body {
+    margin: 0;
+    background: linear-gradient(135deg, #a8edea, #fed6e3);
+    font-family: 'Rubik', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  #quiz-container {
+    background: #ffffffdd;
+    max-width: 480px;
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    padding: 30px 40px;
+    text-align: center;
+  }
+
+  h1 {
+    margin: 0 0 24px;
+    color: #254441;
+    font-weight: 600;
+    font-size: 2rem;
+  }
+
+  #question {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #11403a;
+    margin-bottom: 30px;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .options {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  button.option-btn {
+    background-color: #e8f1f2;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    color: #133737;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 3px 3px 8px #c1d1d2, -3px -3px 8px #f0fafd;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    user-select: none;
+  }
+
+  button.option-btn:hover,
+  button.option-btn:focus-visible {
+    background-color: #d0e6e7;
+    box-shadow: 4px 4px 10px #a0bec0, -4px -4px 10px #e7fbfd;
+    outline: none;
+  }
+
+  button.option-btn.correct {
+    background-color: #a2d5a0;
+    color: #1e431e;
+    box-shadow: none;
+    cursor: default;
+  }
+
+  button.option-btn.wrong {
+    background-color: #f8b4b4;
+    color: #6b1b1b;
+    box-shadow: none;
+    cursor: default;
+  }
+
+  #feedback {
+    margin-top: 28px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    min-height: 36px;
+  }
+
+  #next-btn {
+    margin-top: 30px;
+    padding: 12px 32px;
+    font-weight: 700;
+    font-size: 1rem;
+    background-color: #254441;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    box-shadow: 3px 3px 8px #133737;
+    user-select: none;
+    display: none;
+    transition: background-color 0.3s;
+  }
+  #next-btn:hover,
+  #next-btn:focus-visible {
+    background-color: #3c665f;
+    outline: none;
+  }
+
+  #progress {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #254441cc;
+  }
+
+  @media (max-width: 520px) {
+    #quiz-container {
+      padding: 25px 20px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    #question {
+      font-size: 1.1rem;
+      min-height: 70px;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="quiz-container" role="main" aria-live="polite" aria-label="Quiz interativo sobre países da Ásia Central e do Sul">
+  <h1>Desafio Asiático – Quiz Interativo</h1>
+  <div id="question" tabindex="0">Carregando...</div>
+  <div class="options" role="list" aria-label="Opções de resposta"></div>
+  <div id="feedback" aria-live="assertive" aria-atomic="true"></div>
+  <button id="next-btn" aria-label="Próxima pergunta">Próxima</button>
+  <div id="progress" aria-live="polite"></div>
+</div>
+
+<script>
+  const quizData = [
+    {
+      question: "Qual país da Ásia do Sul é conhecido por Bollywood?",
+      options: ["Índia", "Paquistão", "Nepal", "Bangladesh"],
+      answer: "Índia"
+    },
+    {
+      question: "Qual país da Ásia Central é famoso por suas mesquitas em Samarcanda?",
+      options: ["Uzbequistão", "Cazaquistão", "Tajiquistão", "Quirguistão"],
+      answer: "Uzbequistão"
+    },
+    {
+      question: "Qual é a capital do Nepal?",
+      options: ["Katmandu", "Daca", "Islamabad", "Nova Délhi"],
+      answer: "Katmandu"
+    },
+    {
+      question: "Qual país tem a capital chamada Astana (hoje Nur-Sultan)?",
+      options: ["Cazaquistão", "Uzbequistão", "Quirguistão", "Tajiquistão"],
+      answer: "Cazaquistão"
+    },
+    {
+      question: "Qual país abriga o Himalaia e o Monte Everest?",
+      options: ["Nepal", "Índia", "Butão", "Afeganistão"],
+      answer: "Nepal"
+    },
+    {
+      question: "Qual é o menor país da região, formado por várias ilhas?",
+      options: ["Maldivas", "Sri Lanka", "Malásia", "Camboja"],
+      answer: "Maldivas"
+    },
+    {
+      question: "Qual país é conhecido como a terra dos tigres?",
+      options: ["Índia", "Nepal", "Butão", "Bangladesh"],
+      answer: "Índia"
+    },
+    {
+      question: "Qual país da Ásia Central é conhecido por suas montanhas?",
+      options: ["Quirguistão", "Uzbequistão", "Cazaquistão", "Tajiquistão"],
+      answer: "Quirguistão"
+    },
+    {
+      question: "Qual país tem a moeda chamada 'Rúpia'?",
+      options: ["Índia", "Nepal", "Paquistão", "Todos os anteriores"],
+      answer: "Todos os anteriores"
+    },
+    {
+      question: "Qual país é famoso pelo Taj Mahal?",
+      options: ["Índia", "Paquistão", "Afeganistão", "Bangladesh"],
+      answer: "Índia"
+    },
+    {
+      question: "Qual é a capital do Paquistão?",
+      options: ["Islamabad", "Cabul", "Daca", "Nova Délhi"],
+      answer: "Islamabad"
+    },
+    {
+      question: "Qual país é conhecido por sua cultura de chá?",
+      options: ["Sri Lanka", "Nepal", "Índia", "Todos os anteriores"],
+      answer: "Todos os anteriores"
+    },
+    {
+      question: "Qual país é famoso por suas danças tradicionais, como o Bhangra?",
+      options: ["Índia", "Nepal", "Butão", "Cazaquistão"],
+      answer: "Índia"
+    },
+    {
+      question: "Qual país é conhecido por sua rica herança cultural e histórica, incluindo a Rota da Seda?",
+      options: ["Uzbequistão", "Cazaquistão", "Tajiquistão", "Quirguistão"],
+      answer: "Uzbequistão"
+    },
+    {
+      question: "Qual país é famoso por suas montanhas e trekking?",
+      options: ["Nepal", "Índia", "Butão", "Todos os anteriores"],
+      answer: "Todos os anteriores"
+    }
+  ];
+
+  const questionEl = document.getElementById('question');
+  const optionsContainer = document.querySelector('.options');
+  const feedbackEl = document.getElementById('feedback');
+  const nextBtn = document.getElementById('next-btn');
+  const progressEl = document.getElementById('progress');
+
+  let currentQuestionIndex = 0;
+  let answered = false;
+  let correctCount = 0;
+  let wrongCount = 0;
+
+  function loadQuestion() {
+    answered = false;
+    feedbackEl.textContent = '';
+    nextBtn.style.display = 'none';
+
+    const current = quizData[currentQuestionIndex];
+    questionEl.textContent = current.question;
+    optionsContainer.innerHTML = '';
+
+    // Randomize options order
+    const shuffledOptions = current.options
+      .map(value => ({ value, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ value }) => value);
+
+    for (const option of shuffledOptions) {
+      const btn = document.createElement('button');
+      btn.classList.add('option-btn');
+      btn.type = 'button';
+      btn.textContent = option;
+      btn.setAttribute('role', 'listitem');
+      btn.tabIndex = 0;
+      btn.addEventListener('click', () => selectOption(btn, current.answer));
+      optionsContainer.appendChild(btn);
+    }
+
+    updateProgress();
+    questionEl.focus();
+  }
+
+  function selectOption(selectedBtn, correctAnswer) {
+    if (answered) return;
+    answered = true;
+
+    const buttons = optionsContainer.querySelectorAll('button.option-btn');
+
+    // Disable all buttons after answer
+    buttons.forEach(btn => btn.disabled = true);
+
+    if (selectedBtn.textContent === correctAnswer) {
+      selectedBtn.classList.add('correct');
+      feedbackEl.textContent = 'Correto! Parabéns.';
+      correctCount++;
+    } else {
+      selectedBtn.classList.add('wrong');
+      feedbackEl.textContent = `Errado! A resposta certa é: ${correctAnswer}.`;
+      wrongCount++;
+      // Highlight correct answer button
+      buttons.forEach(btn => {
+        if (btn.textContent === correctAnswer) {
+          btn.classList.add('correct');
+        }
+      });
+    }
+
+    nextBtn.style.display = 'inline-block';
+    nextBtn.focus();
+  }
+
+  function updateProgress() {
+    progressEl.textContent = `Pergunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+  }
+
+  nextBtn.addEventListener('click', () => {
+    currentQuestionIndex++;
+    if (currentQuestionIndex >= quizData.length) {
+      showEndScreen();
+    } else {
+      loadQuestion();
+    }
+  });
+
+  function showEndScreen() {
+    questionEl.textContent = 'Parabéns! Você terminou o quiz.';
+    optionsContainer.innerHTML = '';
+    feedbackEl.innerHTML = `
+      <p>Você acertou: <strong>${correctCount}</strong> ${correctCount === 1 ? 'pergunta' : 'perguntas'}.</p>
+      <p>Você errou: <strong>${wrongCount}</strong> ${wrongCount === 1 ? 'pergunta' : 'perguntas'}.</p>
+    `;
+    nextBtn.style.display = 'none';
+    progressEl.textContent = 'Fim do Quiz';
+  }
+
+  // Initialize quiz
+  loadQuestion();
+</script>
+</body>
+</html>
+
